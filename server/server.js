@@ -1,57 +1,43 @@
+// server/server.js
 const express = require("express");
 const http = require("http");
-const socketIO = require("socket.io");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const passport = require("passport");
+const socketIo = require("socket.io");
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
+const docRoutes = require("./routes/docRoutes");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
 
-require("dotenv").config();
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = socketIo(server);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(passport.initialize());
+app.use(bodyParser.json());
 
-// Passport configuration
-require("./config/passport")(passport);
+app.use("/api/auth", authRoutes);
+app.use("/api/docs", docRoutes);
 
-// Routes
-app.use("/api/users", require("./routes/users"));
-app.use("/api/documents", require("./routes/documents"));
-
-// Socket.io event handling
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+  console.log("New client connected");
 
-  socket.on("join-document", (documentId) => {
-    socket.join(documentId);
-    console.log(`User ${socket.id} joined document ${documentId}`);
+  socket.on("join", (docId) => {
+    socket.join(docId);
+    console.log(`Client joined room: ${docId}`);
   });
 
-  socket.on("leave-document", (documentId) => {
-    socket.leave(documentId);
-    console.log(`User ${socket.id} left document ${documentId}`);
-  });
-
-  socket.on("send-changes", ({ documentId, changes }) => {
-    io.to(documentId).emit("receive-changes", changes);
+  socket.on("edit", (data) => {
+    const { docId, content } = data;
+    io.to(docId).emit("receiveEdit", content);
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    console.log("Client disconnected");
   });
 });
 
-// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
