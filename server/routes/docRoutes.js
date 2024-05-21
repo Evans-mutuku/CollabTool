@@ -4,7 +4,7 @@ const router = express.Router();
 const {
   createDocument,
   getDocuments,
-} = require("../controllers/docController");
+} = require("../countrollers/docController");
 const auth = require("../middleware/auth");
 
 router.post("/documents", auth, createDocument);
