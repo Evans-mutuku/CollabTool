@@ -7,6 +7,46 @@ const editor = document.getElementById("editor");
 const backBtn = document.getElementById("back-btn");
 let currentDocId = null;
 
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("You must be logged in to create a document.");
+    window.location.href = "/login.html"; // Redirect to login page
+  }
+
+  document
+    .getElementById("create-document-btn")
+    .addEventListener("click", async () => {
+      const title = prompt("Enter document title:");
+      if (!title) return;
+
+      try {
+        const response = await fetch("/api/docs/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ title, content: "" }),
+        });
+
+        if (response.ok) {
+          const doc = await response.json();
+          window.location.href = `/edit.html?docId=${doc._id}`; // Redirect to document editing page
+        } else {
+          const data = await response.json();
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to create document");
+      }
+    });
+
+  // Fetch and render the document list (same as previous)
+  fetchDocuments();
+});
 // Create new Document
 async function createNewDocument() {
   const title = prompt("Enter document title:");
@@ -27,12 +67,12 @@ async function openDocument(docId) {
 }
 
 newDocumentBtn.onclick = createNewDocument;
-fetchDocuments();
 async function fetchDocuments() {
   const response = await fetch("/api/docs");
   const documents = await response.json();
   renderDocumentList(documents);
 }
+fetchDocuments();
 
 // Fetch all documents
 function renderDocumentList(documents) {
