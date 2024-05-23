@@ -7,6 +7,7 @@
     <title>Edit Document</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         crossorigin="anonymous">
     <style>
@@ -31,59 +32,71 @@
             <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full ">Login</button>
         </div>
     </header>
-    <h1>Edit Document</h1>
-    <main class="max-w-7xl mx-auto">
+
+    <main class="max-w-7xl mx-auto mt-10">
+        <h1 id="document-title" class="text-3xl font-bold mb-10"></h1>
         <textarea id="editor" class="border border-gray-600 p-5 rounded-md"
             placeholder="Start collaborating..."></textarea>
 
         <button id="back-btn"
             class="bg-green-600 hover:bg-green-700 font-bold rounded-full text-sm text-white py-2 px-8 mt-3">Back
-            to
-            Documents</button>
+            to Documents</button>
     </main>
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script>
+    <script type="text/javascript">
         const socket = io();
-        const urlParams = new URLSearchParams(window.location.search);
-        const docId = urlParams.get('docId');
-        const editor = document.getElementById('editor');
         const backBtn = document.getElementById('back-btn');
 
-        socket.emit('join', docId);
 
-        socket.on('receiveEdit', (content) => {
-            editor.value = content;
+        const urlParams = new URLSearchParams(window.location.search);
+        const docId = urlParams.get('docId');
+
+        // Fetch document content
+        fetch(`/api/docs/${docId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('document-title').textContent = data.title;
+                CKEDITOR.instances.editor.setData(data.content);
+            });
+
+        // Initialize CKEditor
+        CKEDITOR.replace('editor');
+        const editor = CKEDITOR.instances.editor;
+
+        editor.on('change', function () {
+            const content = editor.getData();
+
+            // Emit the changes to other clients
+            socket.emit('edit', {
+                docId,
+                content,
+            });
+
+            // Save content to the server
+            fetch(`/api/docs/${docId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content }),
+            });
         });
 
-        editor.addEventListener('input', () => {
-            const content = editor.value;
-            socket.emit('edit', { docId, content });
+        // Listen for real-time updates
+        socket.emit('join', docId);
+        socket.on('receiveEdit', (content) => {
+            editor.setData(content);
         });
 
         backBtn.onclick = () => {
             window.location.href = '/';
         };
     </script>
+
 </body>
 
 </html>
