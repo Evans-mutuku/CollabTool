@@ -17,23 +17,22 @@
 </head>
 
 <body>
-    <header class="bg-pink-600 text-white shadow-md">
+    <header class=" text-white shadow-md">
         <div class="container mx-auto max-w-7xl flex justify-between items-center p-4">
             <a href="/">
-                <div class="text-lg font-bold">CollabDocs</div>
+                <div class="text-lg font-bold text-black">CollabDocs</div>
             </a>
 
-            <nav>
-                <input type="search" class="rounded-full py-2 w-full text-black px-10" placeholder="Search Document">
-            </nav>
-            <button id="new-document-btn"
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">New Document</button>
+            <div class="max-w-6xl w-full px-24">
+                <input type="search" class="rounded-full py-2 w-full border border-gray-600 text-black px-10"
+                    placeholder="Search Document">
+            </div>
+            <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full ">Login</button>
         </div>
     </header>
     <h1 class="text-3xl font-bold underline">
         Hello world!
     </h1>
-    <h1>Real-time Collaboration Tool</h1>
     <div id="document-list"></div>
     <button id="new-document-btn">New Document</button>
     <div id="editor-container" style="display: none;">
