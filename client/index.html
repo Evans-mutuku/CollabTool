@@ -7,6 +7,9 @@
     <title>Real-time Collaboration Tool</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        crossorigin="anonymous">
+
 
     <style>
         #editor {
@@ -30,11 +33,24 @@
             <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full ">Login</button>
         </div>
     </header>
-    <h1 class="text-3xl font-bold underline">
-        Hello world!
-    </h1>
+
+
+    <main class="max-w-7xl mx-auto">
+
+        <div class="mt-6">
+
+            <i id="new-document-btn" style=" font-size: 80px; color: red; cursor: pointer;"
+                class="fa-solid fa-plus"></i>
+        </div>
+        <div class=""></div>
+        <div class=""></div>
+    </main>
+
+    <div>
+    </div>
+
     <div id="document-list"></div>
-    <button id="new-document-btn">New Document</button>
+    <!-- <button>New Document</button> -->
     <div id="editor-container" style="display: none;">
         <textarea id="editor" placeholder="Start collaborating..."></textarea>
         <button id="back-btn">Back to Documents</button>
