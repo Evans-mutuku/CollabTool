@@ -30,6 +30,21 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
+// Endpoint to create a new document
+app.post("/api/docs/create", async (req, res) => {
+  const { title } = req.body;
+  const newDocument = new Document({ title, content: "" });
+  await newDocument.save();
+  res.json(newDocument);
+});
+
+// Endpoint to get a specific document by ID
+app.get("/api/docs/:id", async (req, res) => {
+  const { id } = req.params;
+  const document = await Document.findById(id);
+  res.json(document);
+});
+
 io.on("connection", (socket) => {
   console.log("New client connected");
 
@@ -41,15 +56,6 @@ io.on("connection", (socket) => {
     const document = await Document.findById(docId);
     if (document) {
       socket.emit("receiveEdit", document.content);
-    } else {
-      // If the document does not exist, create a new one
-      const newDocument = new Document({
-        _id: docId,
-        content: "",
-        title: `Document ${docId}`,
-      });
-      await newDocument.save();
-      socket.emit("receiveEdit", newDocument.content);
     }
   });
 
@@ -62,12 +68,6 @@ io.on("connection", (socket) => {
       document.content = content;
       document.versionHistory.push({ content });
       await document.save();
-    } else {
-      await Document.findByIdAndUpdate(
-        docId,
-        { content, $push: { versionHistory: { content } } },
-        { upsert: true }
-      );
     }
 
     // Broadcast the changes to other clients in the same room
