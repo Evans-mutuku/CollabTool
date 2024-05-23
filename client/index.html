@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-time Collaboration Tool</title>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
         #editor {
             width: 100%;
@@ -15,6 +17,22 @@
 </head>
 
 <body>
+    <header class="bg-pink-600 text-white shadow-md">
+        <div class="container mx-auto max-w-7xl flex justify-between items-center p-4">
+            <a href="/">
+                <div class="text-lg font-bold">CollabDocs</div>
+            </a>
+
+            <nav>
+                <input type="search" class="rounded-full py-2 w-full text-black px-10" placeholder="Search Document">
+            </nav>
+            <button id="new-document-btn"
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">New Document</button>
+        </div>
+    </header>
+    <h1 class="text-3xl font-bold underline">
+        Hello world!
+    </h1>
     <h1>Real-time Collaboration Tool</h1>
     <div id="document-list"></div>
     <button id="new-document-btn">New Document</button>
