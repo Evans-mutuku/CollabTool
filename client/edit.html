@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        #editor {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Edit Document</h1>
+    <textarea id="editor" placeholder="Start collaborating..."></textarea>
+    <button id="back-btn">Back to Documents</button>
+
+    <script>
+        const socket = io();
+        const urlParams = new URLSearchParams(window.location.search);
+        const docId = urlParams.get('docId');
+        const editor = document.getElementById('editor');
+        const backBtn = document.getElementById('back-btn');
+
+        socket.emit('join', docId);
+
+        socket.on('receiveEdit', (content) => {
+            editor.value = content;
+        });
+
+        editor.addEventListener('input', () => {
+            const content = editor.value;
+            socket.emit('edit', { docId, content });
+        });
+
+        backBtn.onclick = () => {
+            window.location.href = '/';
+        };
+    </script>
+</body>
+
+</html>
