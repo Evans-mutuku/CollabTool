@@ -16,27 +16,90 @@
 
 <body>
     <h1>Real-time Collaboration Tool</h1>
-    <textarea id="editor" placeholder="Start collaborating..."></textarea>
+    <div id="document-list"></div>
+    <button id="new-document-btn">New Document</button>
+    <div id="editor-container" style="display: none;">
+        <textarea id="editor" placeholder="Start collaborating..."></textarea>
+        <button id="back-btn">Back to Documents</button>
+    </div>
 
     <script>
         const socket = io();
 
-        const docId = "example-doc-id"; // Replace this with the actual document ID
+        const documentList = document.getElementById('document-list');
+        const newDocumentBtn = document.getElementById('new-document-btn');
+        const editorContainer = document.getElementById('editor-container');
         const editor = document.getElementById('editor');
+        const backBtn = document.getElementById('back-btn');
+        let currentDocId = null;
 
-        // Join the document room
-        socket.emit('join', docId);
+        async function fetchDocuments() {
+            const response = await fetch('/api/docs');
+            const documents = await response.json();
+            renderDocumentList(documents);
+        }
 
-        // Listen for changes from the server
-        socket.on('receiveEdit', (content) => {
-            editor.value = content;
-        });
+        function renderDocumentList(documents) {
+            documentList.innerHTML = '';
+            documents.forEach(doc => {
+                const docElement = document.createElement('div');
+                docElement.textContent = doc.title;
+                docElement.style.cursor = 'pointer';
+                docElement.onclick = () => openDocument(doc._id);
+                documentList.appendChild(docElement);
+            });
+        }
 
-        // Send changes to the server
-        editor.addEventListener('input', () => {
-            const content = editor.value;
-            socket.emit('edit', { docId, content });
-        });
+        async function createNewDocument() {
+            const title = prompt('Enter document title:');
+            if (title) {
+                const response = await fetch('/api/docs/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                });
+                const newDocument = await response.json();
+                fetchDocuments();
+                openDocument(newDocument._id);
+            }
+        }
+
+        async function openDocument(docId) {
+            currentDocId = docId;
+            editorContainer.style.display = 'block';
+            documentList.style.display = 'none';
+            newDocumentBtn.style.display = 'none';
+            backBtn.style.display = 'block';
+
+            const response = await fetch(`/api/docs/${docId}`);
+            const document = await response.json();
+            editor.value = document.content;
+
+            socket.emit('join', docId);
+
+            socket.on('receiveEdit', (content) => {
+                editor.value = content;
+            });
+
+            editor.addEventListener('input', () => {
+                const content = editor.value;
+                socket.emit('edit', { docId, content });
+            });
+        }
+
+        function goBackToDocuments() {
+            editorContainer.style.display = 'none';
+            documentList.style.display = 'block';
+            newDocumentBtn.style.display = 'block';
+            backBtn.style.display = 'none';
+            socket.emit('leave', currentDocId);
+            currentDocId = null;
+        }
+
+        newDocumentBtn.onclick = createNewDocument;
+        backBtn.onclick = goBackToDocuments;
+
+        fetchDocuments();
     </script>
 </body>
 
