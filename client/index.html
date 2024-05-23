@@ -35,12 +35,17 @@
     </header>
 
 
-    <main class="max-w-7xl mx-auto">
+    <section class="bg-gray-200 py-10">
 
-        <div class="mt-6">
-            <i id="new-document-btn" style=" font-size: 80px; color: red; cursor: pointer;"
-                class="fa-solid fa-plus"></i>
+        <div class="max-w-7xl mx-auto">
+            <i id="new-document-btn" style=" font-size: 90px; color: green; cursor: pointer; padding: 15px;"
+                class="fa-solid fa-plus rounded-lg border border-green-600 bg-white"></i>
+            <p class="mt-2 text-sm ml-2">Add Document</p>
         </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto">
+        <div id="document-list" class="flex mt-12 gap-12"></div>
         <div class=""></div>
         <div class=""></div>
     </main>
@@ -48,8 +53,6 @@
     <div>
     </div>
 
-    <div id="document-list"></div>
-    <!-- <button>New Document</button> -->
     <div id="editor-container" style="display: none;">
         <textarea id="editor" placeholder="Start collaborating..."></textarea>
         <button id="back-btn">Back to Documents</button>

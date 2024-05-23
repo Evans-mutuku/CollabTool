@@ -18,7 +18,8 @@ function renderDocumentList(documents) {
   documents.forEach((doc) => {
     const docElement = document.createElement("div");
     docElement.textContent = doc.title;
-    docElement.style.cursor = "pointer";
+    docElement.className =
+      "p-3 border rounded-md mb-2 cursor-pointer hover:bg-gray-100";
     docElement.onclick = () => openDocument(doc._id);
     documentList.appendChild(docElement);
   });
