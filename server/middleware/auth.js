@@ -1,24 +1,31 @@
-// server/middleware/auth.js
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
+const { verifyToken } = require("../utils/jwt");
+const User = require("../models/User");
 
-dotenv.config();
-
-module.exports = function (req, res, next) {
-  const token = req.header("x-auth-token");
-
+const authMiddleware = async (req, res, next) => {
+  const token =
+    req.headers.authorization && req.headers.authorization.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "No token, authorization denied" });
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return res.status(401).json({ message: "Invalid token" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    req.user = user;
     next();
-  } catch (err) {
-    res.status(401).json({ msg: "Token is not valid" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
+
+module.exports = authMiddleware;
 
 // DbSNifX03fnusbnU
 
