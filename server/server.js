@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const docRoutes = require("./routes/docRoutes");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 dotenv.config();
 
@@ -21,6 +22,11 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/docs", docRoutes);
 
+app.use(express.static(path.join(__dirname, "../client")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/index.html"));
+});
 io.on("connection", (socket) => {
   console.log("New client connected");
 
