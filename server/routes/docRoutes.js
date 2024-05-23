@@ -16,13 +16,14 @@ router.post("/create", async (req, res) => {
   await newDocument.save();
   res.status(201).json(newDocument);
 });
+
 // Get all documents
 router.get("/", async (req, res) => {
   const documents = await Document.find({});
   res.json(documents);
 });
 
-router.post("/documents", auth, createDocument);
-router.get("/documents", auth, getDocuments);
+// router.post("/documents", auth, createDocument);
+// router.get("/documents", auth, getDocuments);
 
 module.exports = router;
