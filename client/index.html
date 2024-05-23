@@ -60,45 +60,15 @@
                 });
                 const newDocument = await response.json();
                 fetchDocuments();
-                openDocument(newDocument._id);
+                window.location.href = `/edit.html?docId=${newDocument._id}`;
             }
         }
 
         async function openDocument(docId) {
-            currentDocId = docId;
-            editorContainer.style.display = 'block';
-            documentList.style.display = 'none';
-            newDocumentBtn.style.display = 'none';
-            backBtn.style.display = 'block';
-
-            const response = await fetch(`/api/docs/${docId}`);
-            const document = await response.json();
-            editor.value = document.content;
-
-            socket.emit('join', docId);
-
-            socket.on('receiveEdit', (content) => {
-                editor.value = content;
-            });
-
-            editor.addEventListener('input', () => {
-                const content = editor.value;
-                socket.emit('edit', { docId, content });
-            });
-        }
-
-        function goBackToDocuments() {
-            editorContainer.style.display = 'none';
-            documentList.style.display = 'block';
-            newDocumentBtn.style.display = 'block';
-            backBtn.style.display = 'none';
-            socket.emit('leave', currentDocId);
-            currentDocId = null;
+            window.location.href = `/edit.html?docId=${docId}`;
         }
 
         newDocumentBtn.onclick = createNewDocument;
-        backBtn.onclick = goBackToDocuments;
-
         fetchDocuments();
     </script>
 </body>
