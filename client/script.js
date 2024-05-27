@@ -8,12 +8,12 @@ const backBtn = document.getElementById("back-btn");
 let currentDocId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
 
-  if (!token) {
-    alert("You must be logged in to create a document.");
-    window.location.href = "/login.html"; // Redirect to login page
-  }
+  // if (!token) {
+  //   alert("You must be logged in to create a document.");
+  //   window.location.href = "/login.html"; // Redirect to login page
+  // }
 
   document
     .getElementById("create-document-btn")
