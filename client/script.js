@@ -8,40 +8,33 @@ const backBtn = document.getElementById("back-btn");
 let currentDocId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // const token = localStorage.getItem("token");
-
-  // if (!token) {
-  //   alert("You must be logged in to create a document.");
-  //   window.location.href = "/login.html"; // Redirect to login page
-  // }
-
   document
     .getElementById("create-document-btn")
     .addEventListener("click", async () => {
       const title = prompt("Enter document title:");
       if (!title) return;
 
-      try {
-        const response = await fetch("/api/docs/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title, content: "" }),
-        });
+      window.location.href = `/edit.html?docId=${doc._id}`; // Redirect to document editing page
+      // try {
+      //   const response = await fetch("/api/docs/create", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //     body: JSON.stringify({ title, content: "" }),
+      //   });
 
-        if (response.ok) {
-          const doc = await response.json();
-          window.location.href = `/edit.html?docId=${doc._id}`; // Redirect to document editing page
-        } else {
-          const data = await response.json();
-          alert(data.message);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Failed to create document");
-      }
+      //   if (response.ok) {
+      //     const doc = await response.json();
+      //   } else {
+      //     const data = await response.json();
+      //     alert(data.message);
+      //   }
+      // } catch (error) {
+      //   console.error("Error:", error);
+      //   alert("Failed to create document");
+      // }
     });
 
   // Fetch and render the document list (same as previous)
